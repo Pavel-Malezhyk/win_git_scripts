@@ -14,13 +14,13 @@ function GetAndInstall([System.String] $ParseUrl,
     }
 
     Write-Host "Getting last version link, invoking ... "$ParseUrl
-    $GitLinks = $(Invoke-WebRequest -Uri ([System.UriBuilder]($ParseUrl)).Uri ).Content -split "`n"
+    $GitLinks = $(Invoke-WebRequest -Uri ([System.UriBuilder]($ParseUrl)).Uri -UseBasicParsing ).Content -split "`n"
     $HtmlGitLink = ($GitLinks| Select-String -Pattern $LinkStringRegExp | Select-Object -first 1)
     Write-Host "Html linklink is ... "$HtmlGitLink
     $LastVersionUrl = [regex]::match($HtmlGitLink,$LinkRegExp).Groups[2].Value
     Write-Host "Last version link is ... "$FirstDownloadLinkPart$LastVersionUrl
     Write-Host "Downloading ... "
-    Invoke-WebRequest $FirstDownloadLinkPart$LastVersionUrl -outFile $OutFileName
+    Invoke-WebRequest $FirstDownloadLinkPart$LastVersionUrl -outFile $OutFileName -UseBasicParsing
     Write-Host "Installing ... "
     Invoke-Expression ".\$OutFileName $InstallParameters"
 }
@@ -48,5 +48,4 @@ catch
 Invoke-Expression ".\kdiff3install.exe /S"
 
 Read-Host -Prompt "Press Enter to exit"
-
 
