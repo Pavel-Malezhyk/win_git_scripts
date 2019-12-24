@@ -28,24 +28,32 @@ function GetAndInstall([System.String] $ParseUrl,
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $ProgressPreference = 'SilentlyContinue'
 
-# Installing silently git
-GetAndInstall "https://git-scm.com/download/win" "https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/.*64-bit.*" '<a\s+(?:[^>]*?\s+)?href=([\"''])(.*?)\1' "gitInstall.exe" "" "/SILENT"
-
-Read-Host -Prompt "Press enter after git instalation complete ..."
-
-# Installing git Extensions
-GetAndInstall "https://github.com/gitextensions/gitextensions/releases" "\/gitextensions\/gitextensions\/releases\/download\/.*.msi.*" '<a\s+(?:[^>]*?\s+)?href=([\"''])(.*?)\1' "gitExtInstall.msi" "https://GitHub.com/" ""
-
-# Installing silently kdiff3
-try
-{
-	Invoke-Expression "$(Get-Command curl.exe) -L -o `"kdiff3install.exe`" https://sourceforge.net/projects/kdiff3/files/latest/download"
+$confirmation = Read-Host "Do You want to install or update git cli (y,n)?"
+if ($confirmation -eq 'y') {
+	# Installing silently git
+	GetAndInstall "https://git-scm.com/download/win" "https:\/\/github\.com\/git-for-windows\/git\/releases\/download\/.*64-bit.*" '<a\s+(?:[^>]*?\s+)?href=([\"''])(.*?)\1' "gitInstall.exe" "" "/SILENT"
+	Read-Host -Prompt "Press enter after git instalation complete ..."
 }
-catch
-{
-	Invoke-Expression '&"C:\Program Files\Git\mingw64\bin\curl.exe" -L -o "kdiff3install.exe" https://sourceforge.net/projects/kdiff3/files/latest/download'	
+
+$confirmation = Read-Host "Do You want to install or update gitextensions (y,n)?"
+if ($confirmation -eq 'y') {
+	# Installing git Extensions
+	GetAndInstall "https://github.com/gitextensions/gitextensions/releases" "\/gitextensions\/gitextensions\/releases\/download\/.*.msi.*" '<a\s+(?:[^>]*?\s+)?href=([\"''])(.*?)\1' "gitExtInstall.msi" "https://GitHub.com/" ""
 }
-Invoke-Expression ".\kdiff3install.exe /S"
+
+$confirmation = Read-Host "Do You want to install or update kdiff3 (y,n)?"
+if ($confirmation -eq 'y') {
+	# Installing silently kdiff3
+	try
+	{
+		Invoke-Expression "$(Get-Command curl.exe) -L -o `"kdiff3install.exe`" https://sourceforge.net/projects/kdiff3/files/latest/download"
+	}
+	catch
+	{
+		Invoke-Expression '&"C:\Program Files\Git\mingw64\bin\curl.exe" -L -o "kdiff3install.exe" https://sourceforge.net/projects/kdiff3/files/latest/download'	
+	}
+	Invoke-Expression ".\kdiff3install.exe /S"
+}
 
 Read-Host -Prompt "Press Enter to exit"
 
